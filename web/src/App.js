@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import api from "./services/api";
+import DevItem from './components/DevItem';
+import DevForm from './components/DevForm';
+
 import "./global.css";
 import "./App.css";
 import "./Sidebar.css";
@@ -9,160 +13,34 @@ import "./Main.css";
 // propriedade = atributo  / informacoes que o componente pai passa para o componente filho
 
 function App() {
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
-  const [github_username, setGithunUsername] = useState('');
-  const [techs, setTechs] = useState('');
+  const [devs, setDevs] = useState([]);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        const { latitude, longitude } = position.coords;
-        setLatitude(latitude);
-        setLongitude(longitude);
-
-        // console.log(position);
-      },
-      error => {
-        console.log(error);
-      },
-      {
-        timeout: 30000
-      }
-    );
+    async function loadDevs() {
+      const res = await api.get("/devs");
+      setDevs(res.data);
+    }
+    loadDevs();
   }, []);
 
-
-  async function handleAddDev(e){
-    e.preventDefault();
+  async function handleAddDev(data) {
+    const response = await api.post("/devs", data);
+    setDevs([...devs, response.data])
   }
-
   return (
     <div id="app">
       <aside>
         <strong>Cadastrar</strong>
-        <form onSubmit={handleAddDev}>
-          <div className="input-block">
-            <label htmlFor="github_username">Usuário do Github</label>
-            <input
-              name="github_username"
-              id="username_github"
-              required
-              value={github_username}
-              onChange={e => setGithunUsername(e.target.value)}
-            />
-          </div>
-
-          <div className="input-block">
-            <label htmlFor="techs">Tecnologias</label>
-            <input
-              name="techs"
-              id="techs"
-              required
-              value={techs}
-              onChange={e => setTechs(e.target.value)}
-            />
-          </div>
-
-          <div className="input-group">
-            <div className="input-block">
-              <label htmlFor="latitude">Latitude</label>
-              <input
-                type="number"
-                name="latitude"
-                id="latitude"
-                required
-                value={latitude}
-                onChange={e => setLatitude(e.target.value)}
-              />
-            </div>
-
-            <div className="input-block">
-              <label htmlFor="longitude">Longitude</label>
-              <input
-                type="number"
-                name="longitude"
-                id="longitude"
-                required
-                value={longitude}
-                onChange={e => setLongitude(e.target.value)}
-              />
-            </div>
-          </div>
-          <button type="submit">Salvar</button>
-        </form>
+        <DevForm onSubmit={handleAddDev} />
       </aside>
-
       <main>
         <ul>
-          <li className="dev-item">
-            <header>
-              <img
-                src="https://avatars1.githubusercontent.com/u/39173306?s=460&v=4"
-                alt="FernandoGuide"
-              />
-              <div className="user-info">
-                <strong>FernandoGuide</strong>
-                <span>Java,Angular,ReactJS,React-Native,Node.JS</span>
-              </div>
-            </header>
-            <p>Apaixonado por tecnologias de desenvolvimento web e mobile.</p>
-            <a href="https://github.com/fernandoguide">
-              Acessa Perfil no github
-            </a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img
-                src="https://avatars1.githubusercontent.com/u/39173306?s=460&v=4"
-                alt="FernandoGuide"
-              />
-              <div className="user-info">
-                <strong>FernandoGuide</strong>
-                <span>Java,Angular,ReactJS,React-Native,Node.JS</span>
-              </div>
-            </header>
-            <p>Apaixonado por tecnologias de desenvolvimento web e mobile.</p>
-            <a href="https://github.com/fernandoguide">
-              Acessa Perfil no github
-            </a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img
-                src="https://avatars1.githubusercontent.com/u/39173306?s=460&v=4"
-                alt="FernandoGuide"
-              />
-              <div className="user-info">
-                <strong>FernandoGuide</strong>
-                <span>Java,Angular,ReactJS,React-Native,Node.JS</span>
-              </div>
-            </header>
-            <p>Apaixonado por tecnologias de desenvolvimento web e mobile.</p>
-            <a href="https://github.com/fernandoguide">
-              Acessa Perfil no github
-            </a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img
-                src="https://avatars1.githubusercontent.com/u/39173306?s=460&v=4"
-                alt="FernandoGuide"
-              />
-              <div className="user-info">
-                <strong>FernandoGuide</strong>
-                <span>Java,Angular,ReactJS,React-Native,Node.JS</span>
-              </div>
-            </header>
-            <p>Apaixonado por tecnologias de desenvolvimento web e mobile.</p>
-            <a href="https://github.com/fernandoguide">
-              Acessa Perfil no github
-            </a>
-          </li>
+          {devs.map(dev => (
+            <DevItem key={dev._id} dev={dev} />
+          ))}
         </ul>
       </main>
     </div>
   );
 }
-
 export default App;
