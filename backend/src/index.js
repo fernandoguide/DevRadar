@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const routes = require('./routes');
 
-mongoose.connect('mongodb+srv://omnistack:omnistack123@mydb-fzn7i.mongodb.net/week10?retryWrites=true&w=majority',{
+mongoose.connect('mongodb+srv://omnistack:<>@mydb-fzn7i.mongodb.net/week10?retryWrites=true&w=majority',{
     useNewUrlParser: true ,
     useUnifiedTopology: true
 });
